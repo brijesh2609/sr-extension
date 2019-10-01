@@ -5,7 +5,8 @@
   "permissions": [
     "activeTab",
     "declarativeContent",
-    "storage"
+    "storage",
+    "identity"
   ],
   "background": {
     "scripts": [
@@ -13,7 +14,6 @@
     ],
     "persistent": false
   },
-  "options_page": "options.html",
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {

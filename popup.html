@@ -3,16 +3,172 @@
 
 <head>
   <style>
-    button {
-      height: 30px;
-      width: 30px;
-      outline: none;
+    .sr-logo {
+      width: 120px;
+      height: 45px;
+      background-image: url(https://springrecruit.com/logo.png);
+      cursor: pointer;
+      -webkit-box-flex: 1;
+      flex-grow: 1;
+      margin: 10px auto 0;
+      background-repeat: no-repeat;
+    }
+
+    .label {
+      color: #545e7c;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+
+    .input {
+      height: 32px;
+      width: 320px;
+      color: #53627c;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      border: 1px solid #d9d9d9 !important;
+      margin-bottom: 16px;
+      margin-top: 4px;
+      border-radius: 4px;
+      padding-left: 10px;
+    }
+
+    .select {
+      height: 36px;
+      width: 335px;
+      color: #53627c;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      border: 1px solid #d9d9d9 !important;
+      margin-bottom: 16px;
+      margin-top: 4px;
+      border-radius: 4px;
+      padding-left: 10px;
+    }
+
+    .form {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .submit-btn {
+      color: #fff;
+      background-color: #4767a0;
+      border: 0;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
+      height: 40px;
+      padding: 0 15px;
+      font-size: 16px;
+      border-radius: 4px;
+      width: 100px;
+      margin: 0 auto;
+    }
+
+    #srForm {
+      display: none;
+      margin: auto;
+    }
+
+    #srLoader {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sr-loader-1 {
+      width: 110px;
+      height: 22px;
+      background-color: #4767a0;
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+    }
+
+    .sr-loader-2 {
+      width: 110px;
+      height: 22px;
+      background-color: #f1f1f4;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    .sr-loader-label {
+      width: 227px;
+      color: #53627c;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    .sr-loader {
+      width: 220px;
+      height: 22px;
+      margin-bottom: 10px;
+      display: flex;
+    }
+
+    .sr-ext {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #srJob>option {
+      position: relative;
+      display: block;
+      padding: 5px 12px;
+      overflow: hidden;
+      line-height: 22px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: background .3s ease;
+
+      margin-top: 0;
+      margin-bottom: .5em;
+      color: rgba(0, 0, 0, .85);
+      font-weight: 500;
     }
   </style>
+
 </head>
 
-<body>
-  <button id="changeColor"></button>
+<body class="sr-ext">
+
+  <div class="sr-logo"></div>
+
+  <div id="srLoader">
+    <div class="sr-loader">
+      <div class="sr-loader-1"></div>
+      <div class="sr-loader-2"></div>
+    </div>
+
+    <div class="sr-loader-label">
+      Parsing resume... Please wait...
+    </div>
+  </div>
+  <div class="form" id="srForm">
+    <label class="label" for="name">Name*</label>
+    <input class="input" id="srName" name="name" placeholder="" />
+
+    <label class="label" for="email">Email*</label>
+    <input class="input" id="srEmail" name="email" />
+
+    <label class="label" for="phone">Phone*</label>
+    <input class="input" id="srPhone" name="phone" />
+
+    <label class="label" for="jobs">Job*</label>
+    <select class="select" id="srJob"></select>
+
+    <label class="label" for="stage">Stage*</label>
+    <select class="select" id="srStage"></select>
+
+    <button class="submit-btn" id="srSubmit">Add</button>
+  </div>
   <script src="popup.js"></script>
 </body>
 
