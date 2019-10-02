@@ -6,7 +6,8 @@
     "activeTab",
     "declarativeContent",
     "storage",
-    "identity"
+    "identity",
+    "tabs"
   ],
   "background": {
     "scripts": [

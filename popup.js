@@ -1,3 +1,38 @@
+let resumeLink1;
+
+chrome.runtime.onMessage.addListener(function (request, sender) {
+  if (request.action == "getSource") {
+    const source = request.source;
+    const sourceIndex = source.indexOf("resume_url");
+    const hrefIndex = source.indexOf("href=", sourceIndex - 100);
+    resumeLink1 = "https://angel.co" + source.substring(hrefIndex + 6, sourceIndex + 10);
+
+    fetch(resumeLink1)
+    .then(res => {
+      console.log(res)
+      if (res.ok) {
+        return res.blob()
+      }
+    })
+    .then(res => console.log(URL.createObjectURL(res)))
+    .catch(x => console.log(x))
+  }
+});
+
+function onWindowLoad() {
+  chrome.tabs.executeScript(null, {
+    file: "getPagesSource.js"
+  }, function () {
+    // If you try and inject into an extensions page or the webstore/NTP you'll get an error
+    if (chrome.runtime.lastError) {
+      console.log("runtime error", chrome.runtime.lastError.message)
+    }
+  });
+
+}
+
+window.onload = onWindowLoad;
+
 chrome.storage.sync.get('token', function (data) {
   const name = document.getElementById("srName");
   const phone = document.getElementById("srPhone");
