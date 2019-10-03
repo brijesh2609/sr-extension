@@ -1,22 +1,5 @@
-let resumeLink1;
-
 chrome.runtime.onMessage.addListener(function (request, sender) {
-  if (request.action == "getSource") {
-    const source = request.source;
-    const sourceIndex = source.indexOf("resume_url");
-    const hrefIndex = source.indexOf("href=", sourceIndex - 100);
-    resumeLink1 = "https://angel.co" + source.substring(hrefIndex + 6, sourceIndex + 10);
-
-    fetch(resumeLink1)
-    .then(res => {
-      console.log(res)
-      if (res.ok) {
-        return res.blob()
-      }
-    })
-    .then(res => console.log(URL.createObjectURL(res)))
-    .catch(x => console.log(x))
-  }
+  console.log("popup", request)
 });
 
 function onWindowLoad() {

@@ -2,7 +2,6 @@ const redirectUrl = `https://pdkipihbnfkkgaehflnajlopcekgoalj.chromiumapp.org/pr
 
 chrome.runtime.onInstalled.addListener(function () {
 
-
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [new chrome.declarativeContent.PageStateMatcher({
@@ -13,7 +12,6 @@ chrome.runtime.onInstalled.addListener(function () {
     }]);
   });
 
-
   chrome.identity.launchWebAuthFlow(
     { 'url': `http://localhost:3000/webAuth?redirect_ui=${redirectUrl}`, 'interactive': true },
     function (redirect_url) {
@@ -23,4 +21,19 @@ chrome.runtime.onInstalled.addListener(function () {
       });
     });
 
+});
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log("background", request)
+  if (request.contentScriptQuery === "fetchUrl") {
+    fetch("https://angel.co" + request.resumePath)
+      .then(res => {
+        console.log(res);
+        return res.blob();
+      })
+      .then(res => sendResponse(res))
+      .catch(console.log);
+
+    return true;
+  }
 });

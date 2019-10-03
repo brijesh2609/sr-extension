@@ -7,7 +7,8 @@
     "declarativeContent",
     "storage",
     "identity",
-    "tabs"
+    "tabs",
+    "https://angel.co/"
   ],
   "background": {
     "scripts": [
