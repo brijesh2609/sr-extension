@@ -40,6 +40,7 @@ chrome.runtime.sendMessage(
     },
     function (resume) {
         chrome.runtime.sendMessage({
+            domain: "angel.co",
             action: "getSource",
             source: resume
         });

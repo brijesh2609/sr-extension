@@ -1,20 +1,18 @@
-const redirectUrl = `https://pdkipihbnfkkgaehflnajlopcekgoalj.chromiumapp.org/provider_cb`
+const redirectUrl = `https://ikgipgdgljjadgnddikiddaglkcppkjh.chromiumapp.org/provider_cb`
 
 chrome.runtime.onInstalled.addListener(function () {
 
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     chrome.declarativeContent.onPageChanged.addRules([
       {
-        conditions: [new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: { hostEquals: 'angel.co' },
-        })
-        ],
-        actions: [new chrome.declarativeContent.ShowPageAction()]
-      },
-      {
-        conditions: [new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: { hostEquals: 'hirist.com' },
-        })
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostSuffix: 'angel.co' },
+          }),
+
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostSuffix: 'hirist.com' },
+          })
         ],
         actions: [new chrome.declarativeContent.ShowPageAction()]
       }
