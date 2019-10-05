@@ -1,3 +1,4 @@
+const apiUrl = "https://api-dev.springrecruit.com/api/v1";
 const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 chrome.runtime.onMessage.addListener(function (request, sender) {
@@ -38,7 +39,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
     let { token } = data;
     token = token.replace('Bearer%20', 'Bearer ');
 
-    fetch('http://localhost:8080/api/v1/jobs-list/fakeCompany', {
+    fetch(`${apiUrl}/jobs-list/fakeCompany`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
       document.getElementById("srLoader").style.display = "none";
       document.getElementById("srForm").style.display = "block";
     } else {
-      fetch('http://localhost:8080/api/v1/candidate/parseResumeUrl', {
+      fetch(`${apiUrl}/candidate/parseResumeUrl`, {
         method: 'POST',
         body: JSON.stringify({ resumeLink }),
         headers: {
@@ -133,7 +134,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
       }];
 
 
-      fetch('http://localhost:8080/api/v1/candidate/formValues', {
+      fetch(`${apiUrl}/candidate/formValues`, {
         method: 'POST',
         body: JSON.stringify(form),
         headers: {
