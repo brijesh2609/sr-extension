@@ -1,5 +1,3 @@
-const redirectUrl = `https://ikgipgdgljjadgnddikiddaglkcppkjh.chromiumapp.org/provider_cb`
-
 chrome.runtime.onInstalled.addListener(function () {
 
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
@@ -19,28 +17,23 @@ chrome.runtime.onInstalled.addListener(function () {
     ]);
   });
 
+  const chromeUrl = chrome.runtime.getURL("");
+  const extensionId = chromeUrl.substring(19, chromeUrl.length - 1);
+  const redirectUrl = `https://${extensionId}.chromiumapp.org/provider_cb`;
+
   chrome.identity.launchWebAuthFlow(
-    { 'url': `http://localhost:3000/webAuth?redirect_ui=${redirectUrl}`, 'interactive': true },
+    { 'url': `http://localhost:3000/signin?redirect_ui=${redirectUrl}`, 'interactive': true },
     function (redirect_url) {
       const token = redirect_url.split("authToken=")[1];
       chrome.storage.sync.set({ token }, function () {
-        console.log("The color is green.", token);
+        console.log(token);
       });
     });
 
 });
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log("background", request)
-  if (request.contentScriptQuery === "fetchUrl") {
-    fetch("https://angel.co" + request.resumePath)
-      .then(res => {
-        console.log(res);
-        return res.blob();
-      })
-      .then(res => sendResponse(res))
-      .catch(console.log);
-
-    return true;
-  }
+chrome.browserAction.onClicked.addListener(function () {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, "toggle");
+  })
 });

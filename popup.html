@@ -106,7 +106,7 @@
     .sr-loader-2 {
       width: 110px;
       height: 22px;
-      background-color: #f1f1f4;
+      background-color: #fff;
       border-top-right-radius: 16px;
       border-bottom-right-radius: 16px;
     }
@@ -122,25 +122,25 @@
     }
 
     .sr-loader-label1 {
-      width: 227px;
       color: #53627c;
       font-size: 14px;
       font-weight: 500;
       line-height: 16px;
       text-align: center;
-      margin: 20px auto 12px;
+      margin: 20px auto;
     }
 
     .sr-loader {
       width: 220px;
       height: 22px;
-      margin-bottom: 10px;
+      margin: 0 auto 10px;
       display: flex;
     }
 
     .sr-ext {
       display: flex;
       flex-direction: column;
+      margin-top: 30px;
     }
 
     #srJob>option {
@@ -175,13 +175,36 @@
       color: red;
       font-size: 12px;
     }
+
+    #srSpring {
+      height: 14.17px;
+      width: 103px;
+      color: #4767a0;
+      font-size: 14px;
+      line-height: 16px;
+      margin: 0 auto;
+	    font-weight: bold;
+    }
+
+    #srRecruit {
+      height: 27px;
+	    width: 103px;
+	    color: #4767a0;
+	    font-size: 22.4px;
+	    font-weight: bold;
+	    line-height: 28px;
+      margin: 0 auto;
+    }
   </style>
 
 </head>
 
 <body class="sr-ext">
 
-  <div class="sr-logo"></div>
+  <div>
+    <div id="srSpring">Spring</div>
+    <div id="srRecruit">Recruit</div>
+  </div>
 
   <div id="srLoader">
     <div class="sr-loader">

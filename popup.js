@@ -1,8 +1,10 @@
 const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 chrome.runtime.onMessage.addListener(function (request, sender) {
-  if (request.domain === "hirist.com" && request.action === "getSource") {
-    fetchResumeDetails(request.source)
+  if (request.action === "loadResume") {
+    onWindowLoad()
+  } else if (request.domain === "hirist.com" && request.action === "getSource") {
+    fetchResumeDetails(request.source, "Hirist")
   }
 });
 
@@ -23,9 +25,7 @@ function onWindowLoad() {
   });
 }
 
-window.onload = onWindowLoad;
-
-function fetchResumeDetails(resumeLink) {
+function fetchResumeDetails(resumeLink, addedViaExternalSource) {
   chrome.storage.sync.get('token', function (data) {
     const name = document.getElementById("srName");
     const phone = document.getElementById("srPhone");
@@ -85,9 +85,10 @@ function fetchResumeDetails(resumeLink) {
       })
         .then(res => res.json())
         .then(res => {
-          name.value = res.name;
-          phone.value = res.phone[0];
-          email.value = res.email[0];
+          name.value = (res && res.name) || '';
+          phone.value = (res && res.phone && res.phone[0]) || '';
+          email.value = (res && res.email && res.email[0]) || '';
+          resumeLink = (res && res.resumeLink) || resumeLink;
 
           document.getElementById("srLoader").style.display = "none";
           document.getElementById("srForm").style.display = "block";
@@ -127,7 +128,8 @@ function fetchResumeDetails(resumeLink) {
         email: email.value,
         jobId: jobElem.value,
         stageId: stageElem.value,
-        candidateResumeLink: resumeLink
+        candidateResumeLink: resumeLink,
+        addedViaExternalSource
       }];
 
 
