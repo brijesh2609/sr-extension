@@ -74,9 +74,40 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
       .catch(err => console.log("err", err))
 
     if (!resumeLink) {
+      const resumeBtn = document.getElementById("srResumeBtn");
+      const resumeInput = document.getElementById("srResumeInput");
+
+      resumeBtn.style.display = "block";
       document.getElementById("srLoader").style.display = "none";
       document.getElementById("srForm").style.display = "block";
       document.getElementById("srCandidate").style.display = "none";
+
+      resumeBtn.addEventListener("click", () => {
+        resumeInput.click();
+      })
+
+      resumeInput.onchange = e => {
+        const formData = new FormData();
+        formData.append("resume", e.target.files[0]);
+
+        fetch(`${apiUrl}/candidate/basicResume`, {
+          method: 'POST',
+          headers: {
+            authorization: token
+          },
+          body: formData
+        })
+          .then(res => res.json())
+          .then(res => {
+            res = res && res[0];
+            name.value = (res && res.candidateDetail && res.candidateDetail.name && res.candidateDetail.name[0]) || '';
+            phone.value = (res && res.candidateDetail && res.candidateDetail.phone && res.candidateDetail.phone[0]) || '';
+            email.value = (res && res.candidateDetail && res.candidateDetail.email && res.candidateDetail.email[0]) || '';
+            resumeLink = (res && res.resumeLink);
+          })
+          .catch(err => console.log("err", err))
+      }
+
     } else {
       fetch(`${apiUrl}/candidate/parseResumeUrl`, {
         method: 'POST',
@@ -124,7 +155,10 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
         error = true;
       }
 
-      if (error) return;
+      if (error) {
+        submitBtn.disabled = false;
+        return;
+      };
 
       const form = [{
         name: name.value,

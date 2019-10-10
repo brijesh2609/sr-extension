@@ -63,10 +63,9 @@
       box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
       height: 40px;
       padding: 0 15px;
-      font-size: 16px;
+      font-size: 14px;
       border-radius: 4px;
       width: 100px;
-      margin: 0 auto;
       cursor: pointer;
     }
 
@@ -169,6 +168,20 @@
       display: flex;
     }
 
+    .resume-btn {
+      width: 150px;
+      color: #4767a0;
+      background: #fff;
+      border: 0;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
+      height: 40px;
+      padding: 0 15px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
     #srError {
       display: none;
       width: 320px;
@@ -183,17 +196,26 @@
       font-size: 14px;
       line-height: 16px;
       margin: 0 auto;
-	    font-weight: bold;
+      font-weight: bold;
     }
 
     #srRecruit {
       height: 27px;
-	    width: 103px;
-	    color: #4767a0;
-	    font-size: 22.4px;
-	    font-weight: bold;
-	    line-height: 28px;
+      width: 103px;
+      color: #4767a0;
+      font-size: 22.4px;
+      font-weight: bold;
+      line-height: 28px;
       margin: 0 auto;
+    }
+
+    #srResumeBtn {
+      display: none;
+    }
+
+    .sr-btn {
+      display: flex;
+      justify-content: space-between;
     }
   </style>
 
@@ -233,7 +255,12 @@
     <label class="label" for="stage">Stage*</label>
     <select class="select" id="srStage"></select>
 
-    <button class="submit-btn" id="srSubmit">Add</button>
+    <div class="sr-btn">
+      <button class="resume-btn" id="srResumeBtn">Upload Resume</button>
+      <input type="file" id="srResumeInput" hidden accept=".doc, .docx, .pdf" />
+
+      <button class="submit-btn" id="srSubmit">Add</button>
+    </div>
   </div>
 
   <div id="srError">Email already exists in job</div>
