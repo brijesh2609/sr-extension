@@ -1,3 +1,4 @@
+const uiUrl = "https://dev.springrecruit.com";
 const apiUrl = "https://api-dev.springrecruit.com/api/v1";
 const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -75,6 +76,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
     if (!resumeLink) {
       document.getElementById("srLoader").style.display = "none";
       document.getElementById("srForm").style.display = "block";
+      document.getElementById("srCandidate").style.display = "none";
     } else {
       fetch(`${apiUrl}/candidate/parseResumeUrl`, {
         method: 'POST',
@@ -93,6 +95,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
 
           document.getElementById("srLoader").style.display = "none";
           document.getElementById("srForm").style.display = "block";
+          document.getElementById("srCandidate").style.display = "none";
         })
         .catch(err => console.log("err", err))
     }
@@ -151,8 +154,8 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
             document.getElementById("srCandidateText").innerText = `${name.value} has been added to the job.`;
             document.getElementById("srCandidate").style.display = "block";
             document.getElementById("srForm").style.display = "none";
-            document.getElementById("srViewJob").addEventListener("click", () => window.open(`http://localhost:3000/openings/${jobElem.value}`))
-            document.getElementById("srViewCandidate").addEventListener("click", () => window.open(`http://localhost:3000/candidate/${res.candidates[0].candidate._id}`))
+            document.getElementById("srViewJob").addEventListener("click", () => window.open(`${uiUrl}/openings/${jobElem.value}`))
+            document.getElementById("srViewCandidate").addEventListener("click", () => window.open(`${uiUrl}/candidate/${res.candidates[0].candidate._id}`))
           }
         })
         .catch(err => window.alert(err.message))
