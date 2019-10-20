@@ -3,22 +3,27 @@ const apiUrl = "https://api-dev.springrecruit.com/api/v1";
 const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 chrome.runtime.onMessage.addListener(function (request, sender) {
-  if (request.action === "loadResume") {
-    onWindowLoad()
-  } else if (request.domain === "hirist.com" && request.action === "getSource") {
-    fetchResumeDetails(request.source, "Hirist")
-  }
+  chrome.tabs.query({ 'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT }, function ([tab]) {
+    if (request.action === "loadResume") {
+      onWindowLoad()
+    } else if (request.domain === "hirist.com" && request.action === "getSource") {
+      fetchResumeDetails(request.source, "Hirist", true)
+    } else if (request.domain === "instahyre.com" && request.action === "getSource") {
+      parseImage(request.source)
+    }
+  });
 });
 
 function onWindowLoad() {
   chrome.tabs.query({ 'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT }, function ([tab]) {
-    let file = "getPagesSource.js";
+    let file = "fetchResume/angelList.js";
     if (tab.url.includes("hirist.com")) {
-      file = "getHiristResume.js"
+      file = "fetchResume/hirist.js"
+    } else if (tab.url.includes("instahyre.com")) {
+      file = "fetchResume/instaHyre.js"
     }
 
-    chrome.tabs.executeScript(null, { file }, function () {
-      // If you try and inject into an extensions page or the webstore/NTP you'll get an error
+    chrome.tabs.executeScript(tab.id, { file }, function () {
       if (chrome.runtime.lastError) {
         console.log("runtime error", chrome.runtime.lastError.message)
       }
@@ -27,7 +32,37 @@ function onWindowLoad() {
   });
 }
 
-function fetchResumeDetails(resumeLink, addedViaExternalSource) {
+function parseImage(images) {
+  chrome.storage.sync.get('token', async function (data) {
+    const { token } = data;
+
+    if (images && images.length > 0) {
+      images = images.sort((a, b) => a.page > b.page ? 1 : -1);
+
+      const doc = await images.reduce(async (a, img) => {
+        const doc1 = await a;
+        if (img.page > 1) {
+          doc1.addPage()
+        }
+
+        doc1.addImage(img.url, 'JPEG', 0, 0, 210, 300);
+        return Promise.resolve(doc1);
+      }, Promise.resolve(new jsPDF()))
+
+      basicParse(token, doc.output('blob'))
+        .then(res => {
+          fetchResumeDetails(res, "Instahyre", false)
+        })
+        .catch(() => {
+          fetchResumeDetails(null, "Instahyre", true);
+        })
+    } else {
+      fetchResumeDetails(null, "Instahyre", true)
+    }
+  })
+}
+
+function fetchResumeDetails(resumeLink, addedViaExternalSource, updateResumeLink) {
   chrome.storage.sync.get('token', function (data) {
     const name = document.getElementById("srName");
     const phone = document.getElementById("srPhone");
@@ -37,8 +72,7 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
     const submitBtn = document.getElementById("srSubmit");
 
     let jobs = [];
-    let { token } = data;
-    token = token.replace('Bearer%20', 'Bearer ');
+    const { token } = data;
 
     fetch(`${apiUrl}/jobs-list/fakeCompany`, {
       method: 'GET',
@@ -73,62 +107,54 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
       })
       .catch(err => console.log("err", err))
 
-    if (!resumeLink) {
-      const resumeBtn = document.getElementById("srResumeBtn");
-      const resumeInput = document.getElementById("srResumeInput");
+    if (updateResumeLink) {
+      if (!resumeLink) {
+        const resumeBtn = document.getElementById("srResumeBtn");
+        const resumeInput = document.getElementById("srResumeInput");
 
-      resumeBtn.style.display = "block";
-      document.getElementById("srLoader").style.display = "none";
-      document.getElementById("srForm").style.display = "block";
-      document.getElementById("srCandidate").style.display = "none";
+        resumeBtn.style.display = "block";
+        document.getElementById("srLoader").style.display = "none";
+        document.getElementById("srForm").style.display = "block";
+        document.getElementById("srCandidate").style.display = "none";
 
-      resumeBtn.addEventListener("click", () => {
-        resumeInput.click();
-      })
+        resumeBtn.addEventListener("click", () => {
+          resumeInput.click();
+        })
 
-      resumeInput.onchange = e => {
-        const formData = new FormData();
-        formData.append("resume", e.target.files[0]);
+        resumeInput.onchange = e => {
+          basicParse(token, e.target.files[0])
+            .then(res => {
+              resumeLink = res;
+            })
+            .catch(console.log)
+        }
 
-        fetch(`${apiUrl}/candidate/basicResume`, {
+      } else {
+        fetch(`${apiUrl}/candidate/parseResumeUrl`, {
           method: 'POST',
+          body: JSON.stringify({ resumeLink }),
           headers: {
+            'Content-Type': 'application/json',
             authorization: token
-          },
-          body: formData
+          }
         })
           .then(res => res.json())
           .then(res => {
-            res = res && res[0];
-            name.value = (res && res.candidateDetail && res.candidateDetail.name && res.candidateDetail.name[0]) || '';
-            phone.value = (res && res.candidateDetail && res.candidateDetail.phone && res.candidateDetail.phone[0]) || '';
-            email.value = (res && res.candidateDetail && res.candidateDetail.email && res.candidateDetail.email[0]) || '';
-            resumeLink = (res && res.resumeLink);
+            name.value = (res && res.name) || '';
+            phone.value = (res && res.phone && res.phone[0]) || '';
+            email.value = (res && res.email && res.email[0]) || '';
+            resumeLink = (res && res.resumeLink) || resumeLink;
+
+            document.getElementById("srLoader").style.display = "none";
+            document.getElementById("srForm").style.display = "block";
+            document.getElementById("srCandidate").style.display = "none";
           })
           .catch(err => console.log("err", err))
       }
-
     } else {
-      fetch(`${apiUrl}/candidate/parseResumeUrl`, {
-        method: 'POST',
-        body: JSON.stringify({ resumeLink }),
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: token
-        }
-      })
-        .then(res => res.json())
-        .then(res => {
-          name.value = (res && res.name) || '';
-          phone.value = (res && res.phone && res.phone[0]) || '';
-          email.value = (res && res.email && res.email[0]) || '';
-          resumeLink = (res && res.resumeLink) || resumeLink;
-
-          document.getElementById("srLoader").style.display = "none";
-          document.getElementById("srForm").style.display = "block";
-          document.getElementById("srCandidate").style.display = "none";
-        })
-        .catch(err => console.log("err", err))
+      document.getElementById("srLoader").style.display = "none";
+      document.getElementById("srForm").style.display = "block";
+      document.getElementById("srCandidate").style.display = "none";
     }
 
 
@@ -211,4 +237,32 @@ function fetchResumeDetails(resumeLink, addedViaExternalSource) {
         })
     });
   });
+}
+
+function basicParse(token, file) {
+  return new Promise((resolve, reject) => {
+    const name = document.getElementById("srName");
+    const phone = document.getElementById("srPhone");
+    const email = document.getElementById("srEmail");
+
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    fetch(`${apiUrl}/candidate/basicResume`, {
+      method: 'POST',
+      headers: {
+        authorization: token
+      },
+      body: formData
+    })
+      .then(res => res.json())
+      .then(res => {
+        res = res && res[0];
+        name.value = (res && res.candidateDetail && res.candidateDetail.name && res.candidateDetail.name[0]) || '';
+        phone.value = (res && res.candidateDetail && res.candidateDetail.phone && res.candidateDetail.phone[0]) || '';
+        email.value = (res && res.candidateDetail && res.candidateDetail.email && res.candidateDetail.email[0]) || '';
+        resolve(res && res.resumeLink);
+      })
+      .catch(reject)
+  })
 }

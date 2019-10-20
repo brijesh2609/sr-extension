@@ -1,5 +1,4 @@
 chrome.runtime.onMessage.addListener(function (msg, sender) {
-    console.log("toggle msg", msg)
     if (msg == "toggle") {
         toggle();
     }

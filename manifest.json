@@ -1,6 +1,6 @@
 {
   "name": "SpringRecruit",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A free ATS tool for your hiring needs",
   "permissions": [
     "activeTab",
@@ -18,12 +18,25 @@
   "browser_action": {
     "default_icon": "images/icon.png"
   },
-	"content_scripts": [
-		{
-			"matches": ["https://recruit.hirist.com/*"],
-			"js": ["togglePanel.js"]
-		}
-	],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://recruit.hirist.com/*"
+      ],
+      "js": [
+        "togglePanel.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.instahyre.com/*"
+      ],
+      "js": [
+        "togglePanel.js",
+        "lib/jspdf.min.js"
+      ]
+    }
+  ],
   "icons": {
     "16": "images/icon.png",
     "32": "images/icon.png",
@@ -31,5 +44,7 @@
     "128": "images/icon.png"
   },
   "manifest_version": 2,
-  "web_accessible_resources": ["popup.html"]
+  "web_accessible_resources": [
+    "popup.html"
+  ]
 }

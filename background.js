@@ -6,7 +6,7 @@ chrome.runtime.onInstalled.addListener(function () {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostSuffix: 'angel.co' },
+            pageUrl: { hostSuffix: 'instahyre.com' },
           }),
 
           new chrome.declarativeContent.PageStateMatcher({
@@ -25,7 +25,9 @@ chrome.runtime.onInstalled.addListener(function () {
   chrome.identity.launchWebAuthFlow(
     { 'url': `${uiUrl}/signin?redirect_ui=${redirectUrl}`, 'interactive': true },
     function (redirect_url) {
-      const token = redirect_url.split("authToken=")[1];
+      let token = redirect_url.split("authToken=")[1];
+      token = token.replace('Bearer%20', 'Bearer ');
+
       chrome.storage.sync.set({ token }, function () {
         console.log(token);
       });
